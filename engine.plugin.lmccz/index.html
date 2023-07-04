@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+
+<head>
+    <title>Hello! Welcome to PluginWebGLEngine</title>
+</head>
+
+<body>
+    <script type="module">
+        import PluginEngine from './PluginEngine.js';
+
+        class game extends PluginEngine.Scene
+        {
+            key = 'game';
+
+            init()
+            {
+                console.log('init')
+            }
+
+            preload()
+            {
+                console.log('preload')
+                this.load.image('./lite.jpg', 'lite');
+                this.load.image('./idle.png', 'idle');
+            }
+
+            create()
+            {
+                console.log('create');
+
+                this.game.anims.spritesheet({
+                    key: 'idle_anims',
+                    texture: 'idle',
+                    frameWidth: 64,
+                    frameHeight: 80,
+                    repeat: -1,
+                    frameTime: 300
+                });
+
+                this.t0 = this.add.image(80, 80, 0, 'lite')
+                this.t0.tint.setTo(100, 100, 100, 255)
+
+                this.t = this.add.sprite(50, 50, 20, 'idle_anims');
+                this.v = 1;
+
+                this.game.scenes.start('HUD')
+            }
+
+            update(time, delta)
+            {
+                this.t.preUpdate(time, delta);
+
+                this.t0.tint.r += this.v * 2;
+                this.t0.transform.scale.x += (this.v / 1000);
+                this.t0.transform.scale.y += (this.v / 1000);
+
+                if (this.t0.transform.scale.x > 1.1 || this.t0.transform.scale.x < 0.9) this.v = -this.v;
+            }
+        }
+
+        class HUD extends PluginEngine.Scene
+        {
+            key = 'HUD';
+
+            create()
+            {
+                console.log('scene2');
+
+                const textCount = 100;
+
+                for (let i = 0; i < textCount; i++)
+                {
+                    const obj = this.add.image(Math.random() * 50 + 50, Math.random() * 50 + 50, 0, 'lite');
+
+                    obj.tint.r = Math.random() * 256 >> 0;
+                    obj.tint.g = Math.random() * 256 >> 0;
+                    obj.tint.b = Math.random() * 256 >> 0;
+
+                    obj.vx = Math.random() * 8 + 1;
+                    obj.vy = Math.random() * 8 + 1;
+
+                    obj.transform.scale.set(Math.random(), Math.random());
+
+                    obj.update = () =>
+                    {
+                        obj.x += obj.vx;
+                        obj.y += obj.vy;
+
+                        obj.transform.rotation.x += Math.random() * 0.1;
+                        obj.transform.rotation.y += Math.random() * 0.1;
+                        obj.transform.rotation.z += Math.random() * 0.1;
+
+                        if (obj.x >= this.game.config.width - (obj.width / 2) || obj.x <= obj.width / 2) obj.vx = -obj.vx;
+                        if (obj.y >= this.game.config.height - (obj.height / 2) || obj.y <= obj.height / 2) obj.vy = -obj.vy;
+                    }
+                }
+            }
+
+            update(time, delta)
+            {
+                this.children.forEach(c =>
+                {
+                    c.update();
+                });
+            }
+        }
+
+        const config = {
+            width: 640,
+            height: 320,
+            backgroundColor: 0xcccccc,
+            scenes: [game, HUD],
+        };
+
+        window.onload = () =>
+        {
+            new PluginEngine.Game(config);
+        }
+    </script>
+</body>
+
+</html>
