@@ -1,9 +1,6 @@
-# 设计思想
-- 万物皆插件;
-- 插件以事件形式解耦
+# Any function is added as a plug-in
 
-
-# 参考
+# Reference
 - https://www.yuque.com/dev666/ts_webgl_game_engine/xzgywx
 - Phaser
 
